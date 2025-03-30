@@ -22,14 +22,71 @@ const populationGroups = {
 };
 async function loadData() {
     try {
-        const response = await fetch('https://raw.githubusercontent.com/atlashrike/crowsite/main/data/visualization_data.json');
-        visualizationData = await response.json();
+        const siteFiles = [
+            'warsaw_poland.json',
+            'sorriba_spain.json',
+            'rimbo_sweden.json',
+            'uppsala_sweden.json',
+            'radolfzell_germany.json',
+            'konstanz_germany.json'
+        ];
+
+        const loadingDiv = document.createElement('div');
+        loadingDiv.style.position = 'absolute';
+        loadingDiv.style.top = '50%';
+        loadingDiv.style.left = '50%';
+        loadingDiv.style.transform = 'translate(-50%, -50%)';
+        loadingDiv.style.background = 'rgba(255, 255, 255, 0.9)';
+        loadingDiv.style.padding = '20px';
+        loadingDiv.style.borderRadius = '5px';
+        loadingDiv.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+        document.body.appendChild(loadingDiv);
+        loadingDiv.textContent = `Loading data (1/${siteFiles.length})...`;
+        const firstResponse = await fetch(`split_data/${siteFiles[0]}`);
+        visualizationData = await firstResponse.json();
+        visualizationData.locations = [];
+        visualizationData.population_ixs = [];
+        visualizationData.site_names = [];
+        visualizationData.kde_data = {};
+        for (let i = 0; i < siteFiles.length; i++) {
+            loadingDiv.textContent = `Loading data (${i + 1}/${siteFiles.length})...`;
+            
+            const response = await fetch(`split_data/${siteFiles[i]}`);
+            const siteData = await response.json();
+            visualizationData.locations.push(siteData.locations[0]);
+            visualizationData.population_ixs.push(siteData.population_ixs[0]);
+            visualizationData.site_names.push(siteData.site_names[0]);
+            visualizationData.kde_data[i] = siteData.kde_data['0'];
+        }
+
+        document.body.removeChild(loadingDiv);
+
         initVisualization();
+        setupEventListeners();
+        populateChromosomeSelect();
+
     } catch (error) {
         console.error('Error loading data:', error);
-        document.getElementById('container').innerHTML = '<div class="error-message">Error loading visualization data</div>';
+        document.getElementById('container').innerHTML = 
+            '<div class="error-message">Error loading visualization data</div>';
     }
 }
+
+const style = document.createElement('style');
+style.textContent = `
+    .error-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 0, 0, 0.1);
+        color: red;
+        padding: 20px;
+        border-radius: 5px;
+        font-family: 'Commissioner', sans-serif;
+    }
+`;
+document.head.appendChild(style);
 
 function initVisualization() {
     scene = new THREE.Scene();
