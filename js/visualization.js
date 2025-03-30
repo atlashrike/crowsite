@@ -479,6 +479,16 @@ window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const legendContainer = document.getElementById('legend-container');
+    if (legendContainer) {
+        const containerWidth = legendContainer.offsetWidth;
+        const crowIcons = document.getElementsByClassName('crow-icon');
+        Array.from(crowIcons).forEach(icon => {
+            const maxHeight = Math.min(50, containerWidth * 0.1); 
+            icon.style.maxHeight = `${maxHeight}px`;
+        });
+    }
 });
 
 loadData();
