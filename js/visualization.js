@@ -57,7 +57,12 @@ async function loadData() {
 
         try {
             visualizationData = JSON.parse(text);
-            console.log("Successfully parsed data");
+            console.log(""Data structure:", {
+                hasLocations: !!visualizationData.locations,
+                hasAncLocs: !!visualizationData.anc_locs,
+                locationsLength: visualizationData.locations?.length,
+                ancLocsLength: visualizationData.anc_locs?.length
+            });
             document.body.removeChild(loadingDiv);
             await initVisualization();
             setupEventListeners();
@@ -70,12 +75,6 @@ async function loadData() {
             }
             throw parseError;
         }
-
-        document.body.removeChild(loadingDiv);
-        console.log("Data loaded, initializing visualization");
-        initVisualization();
-        setupEventListeners();
-        populateChromosomeSelect();
 
     } catch (error) {
         console.error('Error loading data:', error);
@@ -93,6 +92,7 @@ async function loadData() {
         document.getElementById('container').appendChild(errorMessage);
     }
 }
+
 
 const style = document.createElement('style');
 style.textContent = `
@@ -613,8 +613,10 @@ function updateVisualization() {
     updateSites();
 }
 
-function startAnimation() {
+function animate() {
     requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
 }
 
 
@@ -637,7 +639,7 @@ window.addEventListener('resize', () => {
 
 async function init() {
     await loadData();
-    startAnimation();
+    animate(); 
 }
 
 init();
