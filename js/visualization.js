@@ -37,7 +37,7 @@ async function loadData() {
 
         loadingDiv.textContent = 'Loading main data...';
         
-        const mainResponse = await fetch(`${API_BASE_URL}/api/visualization_data`);
+        const mainResponse = await fetch(`${API_BASE_URL}/api/main-data`);
         if (!mainResponse.ok) {
             throw new Error(`HTTP error! status: ${mainResponse.status}`);
         }
@@ -45,7 +45,7 @@ async function loadData() {
         const mainData = await mainResponse.json();
         
         loadingDiv.textContent = 'Loading ancestor locations...';
-        const ancResponse = await fetch(`${API_BASE_URL}/api/anc_loc?samples=0,1,2,3,4,5&time=0`);
+        const ancResponse = await fetch(`${API_BASE_URL}/api/ancestor-locations?samples=0,1,2,3,4,5&time=0`);
         if (!ancResponse.ok) {
             throw new Error(`HTTP error! status: ${ancResponse.status}`);
         }
