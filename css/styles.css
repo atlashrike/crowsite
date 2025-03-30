@@ -101,7 +101,7 @@ h3 {
 }
 
 .crow-icon {
-    max-height: 50px; 
+    max-height: 100px; 
     width: auto;
     object-fit: contain; 
     opacity: 0.3;
@@ -110,7 +110,7 @@ h3 {
 
 @media screen and (max-width: 768px) {
     .crow-icon {
-        max-height: 30px; 
+        max-height: 50px; 
     }
 }
 
