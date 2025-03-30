@@ -20,7 +20,7 @@ const populationGroups = {
     hooded: ['Warsaw, Poland', 'Rimbo, Sweden', 'Uppsala, Sweden'],
     carrion: ['Konstanz, Germany', 'Radolfzell, Germany', 'Sorriba, Spain']
 };
-const mainDataUrl = 'https://storage.googleapis.com/crowdat-8zp6gsbxjkr8nnln2dt2/main_data.json';
+const mainDataUrl = 'https://storage.googleapis.com/crowdat-8zp6gsbxjkr8nnln2dt2/visualization_data.json.json';
 const ancLocsUrl = 'https://storage.googleapis.com/crowdat-8zp6gsbxjkr8nnln2dt2/anc_locs.json';
 
 
