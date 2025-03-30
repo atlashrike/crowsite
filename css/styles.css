@@ -1,8 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Cantarell:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Commissioner:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
-body {
-    margin: 0;
-    font-family: 'Cantarell', sans-serif;
+body { 
+    margin: 0; 
+    font-family: 'Commissioner', sans-serif;
+    font-weight: 400;
 }
 
 #container { 
@@ -26,22 +27,25 @@ body {
     box-shadow: 0 0 10px rgba(0,0,0,0.3);
     max-height: 90vh;
     overflow-y: auto;
-    font-family: 'Cantarell', sans-serif;
+    font-family: 'Commissioner', sans-serif;
     font-size: 14px;
+    font-weight: 400;
 }
 
 h3 {
-    font-family: 'Cantarell', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
+    font-family: 'Commissioner', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
     margin-top: 0;
     margin-bottom: 15px;
     color: #333;
+    letter-spacing: 0.3px;
 }
 
 .slider-container {
     margin: 15px 0;
-    font-family: 'Cantarell', sans-serif;
+    font-family: 'Commissioner', sans-serif;
+    font-weight: 400;
 }
 
 .slider-container input {
@@ -50,50 +54,156 @@ h3 {
 
 .layer-toggle {
     margin: 10px 0;
-    font-family: 'Cantarell', sans-serif;
+    font-family: 'Commissioner', sans-serif;
+    font-weight: 400;
 }
 
 #chromosomeSelect {
     width: 100%;
     margin: 10px 0;
-    font-family: 'Cantarell', sans-serif;
+    font-family: 'Commissioner', sans-serif;
+    font-weight: 400;
     padding: 5px;
 }
 
 #colorMode {
     margin: 10px 0;
-    font-family: 'Cantarell', sans-serif;
+    font-family: 'Commissioner', sans-serif;
 }
 
-.legend {
-    margin-top: 15px;
-    border-top: 1px solid #ccc;
-    padding-top: 10px;
-    font-family: 'Cantarell', sans-serif;
+
+#legend-container {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    max-width: 800px;
+    width: 80%;
+    font-family: 'Commissioner', sans-serif;
+}
+
+.legend-column {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 15px;
+}
+
+.crow-icon {
+    max-height: 100px;
+    width: auto;
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+.crow-icon.active {
+    opacity: 1;
+}
+
+.legend-items {
+    flex: 1;
+    padding: 0 15px;
+}
+
+.legend-items div {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.legend-items .color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border-radius: 3px;
+}
+
+#credits {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    text-align: center;
+    font-family: 'Commissioner', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+#credits a {
+    color: #2196F3;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+#credits a:hover {
+    text-decoration: underline;
 }
 
 .tooltip {
     position: absolute;
     background: white;
-    padding: 5px;
+    padding: 8px;
     border-radius: 3px;
     display: none;
     pointer-events: none;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    font-family: 'Cantarell', sans-serif;
-    font-size: 12px;
-}
-
-select, input {
-    font-family: 'Cantarell', sans-serif;
+    font-family: 'Commissioner', sans-serif;
     font-size: 13px;
+    font-weight: 400;
 }
 
-#timeValue, #fstValue {
-    font-weight: 700;
-    color: #2196F3;
+select, input[type="range"] {
+    font-family: 'Commissioner', sans-serif;
+    font-size: 13px;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
 }
 
 label {
+    font-weight: 500;
+    color: #444;
+}
+
+#timeValue, #fstValue {
+    font-weight: 600;
+    color: #2196F3;
+    min-width: 30px;
+    display: inline-block;
+    text-align: right;
+}
+
+.gradient-container {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.gradient-bar {
+    height: 20px;
+    border-radius: 3px;
+    margin: 5px 0;
+}
+
+.gradient-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
     font-weight: 400;
+    color: #666;
 }
