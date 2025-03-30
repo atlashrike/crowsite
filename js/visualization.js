@@ -21,7 +21,6 @@ const populationGroups = {
     carrion: ['Konstanz, Germany', 'Radolfzell, Germany', 'Sorriba, Spain']
 };
 const dataUrl = 'https://storage.googleapis.com/crowdat-8zp6gsbxjkr8nnln2dt2/visualization_data.json';
-
 async function loadData() {
     try {
         const loadingDiv = document.createElement('div');
@@ -36,14 +35,25 @@ async function loadData() {
 
         loadingDiv.textContent = 'Loading data...';
         
-        const response = await fetch(dataUrl);
+        const response = await fetch('https://storage.googleapis.com/crowdat-8zp6gsbxjkr8nnln2dt2/visualization_data.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        visualizationData = await response.json();
-        console.log("Successfully loaded visualization data");
+        
+        const text = await response.text();
+        const cleanedText = text.replace(/\bNaN\b|\bnan\b|\bNAN\b/g, 'null');
+        
+        try {
+            visualizationData = JSON.parse(cleanedText);
+            console.log("Successfully parsed data");
+        } catch (parseError) {
+            console.error("JSON Parse Error:", parseError);
+            console.log("Problematic text sample:", cleanedText.substring(0, 200) + "...");
+            throw parseError;
+        }
 
         document.body.removeChild(loadingDiv);
+        console.log("Data loaded, initializing visualization");
         initVisualization();
         setupEventListeners();
         populateChromosomeSelect();
@@ -64,7 +74,6 @@ async function loadData() {
         document.getElementById('container').appendChild(errorMessage);
     }
 }
-
 
 const style = document.createElement('style');
 style.textContent = `
