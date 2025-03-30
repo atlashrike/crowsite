@@ -137,10 +137,6 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-async function init() {
-    await loadData();
-    startAnimation();
-}
 
 
 async function initVisualization() {
