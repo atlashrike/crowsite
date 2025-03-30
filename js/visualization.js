@@ -36,7 +36,7 @@ async function loadData() {
         loadingDiv.style.borderRadius = '5px';
         document.body.appendChild(loadingDiv);
 
-        loadingDiv.textContent = 'Loading data...';
+        loadingDiv.textContent = 'Loading main data...';
         
         const [mainResponse, ancLocsResponse] = await Promise.all([
             fetch(mainDataUrl),
@@ -58,26 +58,32 @@ async function loadData() {
         ancLocsText = ancLocsText.replace(/[^[,\s]NaN[,\s\]]/g, '0');
         ancLocsText = ancLocsText.replace(/\bNaN\b/g, '0');
 
-        const mainData = JSON.parse(mainText);
-        const ancLocsData = JSON.parse(ancLocsText);
-        
-        visualizationData = {
-            ...mainData,
-            anc_locs: ancLocsData.data
-        };
+        try {
+            const mainData = JSON.parse(mainText);
+            const ancLocsData = JSON.parse(ancLocsText);
 
-        console.log("Data structure:", {
-            hasLocations: !!visualizationData.locations,
-            hasAncLocs: !!visualizationData.anc_locs,
-            locationsLength: visualizationData.locations?.length,
-            ancLocsLength: visualizationData.anc_locs?.length
-        });
+            visualizationData = {
+                ...mainData,
+                anc_locs: ancLocsData.data
+            };
 
-        document.body.removeChild(loadingDiv);
-        await initVisualization();
-        setupEventListeners();
-        populateChromosomeSelect();
-        updateVisualization();
+            console.log("Data structure:", {
+                hasLocations: !!visualizationData.locations,
+                hasAncLocs: !!visualizationData.anc_locs,
+                locationsLength: visualizationData.locations?.length,
+                ancLocsLength: visualizationData.anc_locs?.length
+            });
+
+            document.body.removeChild(loadingDiv);
+            await initVisualization();
+            setupEventListeners();
+            populateChromosomeSelect();
+            updateVisualization();
+
+        } catch (parseError) {
+            console.error("Parse error:", parseError);
+            throw parseError;
+        }
 
     } catch (error) {
         console.error('Error loading data:', error);
