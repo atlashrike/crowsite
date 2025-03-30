@@ -118,6 +118,30 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+let animationStarted = false;
+
+function startAnimation() {
+    if (!animationStarted && controls) {
+        animationStarted = true;
+        animate();
+    }
+}
+
+function animate() {
+    if (!animationStarted) return;
+    
+    requestAnimationFrame(animate);
+    if (controls) {
+        controls.update();
+    }
+    renderer.render(scene, camera);
+}
+
+async function init() {
+    await loadData();
+    startAnimation();
+}
+
 
 async function initVisualization() {
     scene = new THREE.Scene();
@@ -128,7 +152,7 @@ async function initVisualization() {
 
     Object.values(layers).forEach(layer => scene.add(layer));
     await createGlobe();
-    setupControls();
+    setupControls();  
     setupLighting();
     createLegend();
     
