@@ -23,12 +23,12 @@ const populationGroups = {
 async function loadData() {
     try {
         const siteFiles = [
-            'warsaw_poland.json',
-            'sorriba_spain.json',
-            'rimbo_sweden.json',
-            'uppsala_sweden.json',
-            'radolfzell_germany.json',
-            'konstanz_germany.json'
+            'https://raw.githubusercontent.com/atlashrike/crowsite/main/data/konstanz_germany.json',
+            'https://raw.githubusercontent.com/atlashrike/crowsite/main/data/sorriba_spain.json',
+            'https://raw.githubusercontent.com/atlashrike/crowsite/main/data/rimbo_sweden.json',
+            'https://raw.githubusercontent.com/atlashrike/crowsite/main/data/uppsala_sweden.json',
+            'https://raw.githubusercontent.com/atlashrike/crowsite/main/data/radolfzell_germany.json',
+            'https://raw.githubusercontent.com/atlashrike/crowsite/main/data/konstanz_germany.json'
         ];
 
         const loadingDiv = document.createElement('div');
