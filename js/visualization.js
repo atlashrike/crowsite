@@ -13,6 +13,7 @@ let currentChromosome = 'all';
 let colorMode = 'distance';
 let arrowColorMode = 'distance';
 let pointColorMode = 'fst';
+let animationStarted = false;
 
 const radius = 5;
 const populationColors = d3.scaleOrdinal(d3.schemeCategory10);
@@ -20,9 +21,7 @@ const populationGroups = {
     hooded: ['Warsaw, Poland', 'Rimbo, Sweden', 'Uppsala, Sweden'],
     carrion: ['Konstanz, Germany', 'Radolfzell, Germany', 'Sorriba, Spain']
 };
-const mainDataUrl = 'https://storage.googleapis.com/crowdat-8zp6gsbxjkr8nnln2dt2/visualization_data.json';
-const ancLocsUrl = 'https://storage.googleapis.com/crowdat-8zp6gsbxjkr8nnln2dt2/anc_locs.json';
-
+const API_BASE_URL = 'https://crow-data-server-103998770121.us-central1.run.app';
 
 async function loadData() {
     try {
@@ -38,52 +37,38 @@ async function loadData() {
 
         loadingDiv.textContent = 'Loading main data...';
         
-        const [mainResponse, ancLocsResponse] = await Promise.all([
-            fetch(mainDataUrl),
-            fetch(ancLocsUrl)
-        ]);
+        const mainResponse = await fetch(`${API_BASE_URL}/api/main-data`);
+        if (!mainResponse.ok) {
+            throw new Error(`HTTP error! status: ${mainResponse.status}`);
+        }
 
-        if (!mainResponse.ok || !ancLocsResponse.ok) {
-            throw new Error(`HTTP error! Main data: ${mainResponse.status}, Anc locs: ${ancLocsResponse.status}`);
+        const mainData = await mainResponse.json();
+        
+        loadingDiv.textContent = 'Loading ancestor locations...';
+        const ancResponse = await fetch(`${API_BASE_URL}/api/ancestor-locations?samples=0,1,2,3,4,5&time=0`);
+        if (!ancResponse.ok) {
+            throw new Error(`HTTP error! status: ${ancResponse.status}`);
         }
         
-        let mainText = await mainResponse.text();
-        mainText = mainText.replace(/[^[,\s]NaN[,\s\]]/g, '0');  
-        mainText = mainText.replace(/\bNaN\b/g, '0');            
-        mainText = mainText.replace(/\bnan\b/gi, '0');          
-        mainText = mainText.replace(/\binfinity\b/gi, '"inf"');  
-        mainText = mainText.replace(/([,$$])(\s*)-?NaN(\s*)(,|$$])/g, '$1$20$3$4'); 
+        const ancData = await ancResponse.json();
 
-        let ancLocsText = await ancLocsResponse.text();
-        ancLocsText = ancLocsText.replace(/[^[,\s]NaN[,\s\]]/g, '0');
-        ancLocsText = ancLocsText.replace(/\bNaN\b/g, '0');
+        visualizationData = {
+            ...mainData,
+            anc_locs: ancData.data
+        };
 
-        try {
-            const mainData = JSON.parse(mainText);
-            const ancLocsData = JSON.parse(ancLocsText);
+        console.log("Data structure:", {
+            hasLocations: !!visualizationData.locations,
+            hasAncLocs: !!visualizationData.anc_locs,
+            locationsLength: visualizationData.locations?.length,
+            ancLocsLength: Object.keys(visualizationData.anc_locs).length
+        });
 
-            visualizationData = {
-                ...mainData,
-                anc_locs: ancLocsData.data
-            };
-
-            console.log("Data structure:", {
-                hasLocations: !!visualizationData.locations,
-                hasAncLocs: !!visualizationData.anc_locs,
-                locationsLength: visualizationData.locations?.length,
-                ancLocsLength: visualizationData.anc_locs?.length
-            });
-
-            document.body.removeChild(loadingDiv);
-            await initVisualization();
-            setupEventListeners();
-            populateChromosomeSelect();
-            updateVisualization();
-
-        } catch (parseError) {
-            console.error("Parse error:", parseError);
-            throw parseError;
-        }
+        document.body.removeChild(loadingDiv);
+        await initVisualization();
+        setupEventListeners();
+        populateChromosomeSelect();
+        updateVisualization();
 
     } catch (error) {
         console.error('Error loading data:', error);
@@ -102,7 +87,6 @@ async function loadData() {
     }
 }
 
-
 const style = document.createElement('style');
 style.textContent = `
     .error-message {
@@ -118,7 +102,30 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
-let animationStarted = false;
+
+async function loadAncestorLocations(timeStep) {
+    const loadingDiv = document.createElement('div');
+    loadingDiv.style.position = 'absolute';
+    loadingDiv.style.top = '50%';
+    loadingDiv.style.left = '50%';
+    loadingDiv.style.transform = 'translate(-50%, -50%)';
+    loadingDiv.style.background = 'rgba(255, 255, 255, 0.9)';
+    loadingDiv.style.padding = '20px';
+    loadingDiv.style.borderRadius = '5px';
+    document.body.appendChild(loadingDiv);
+    loadingDiv.textContent = 'Loading ancestor data...';
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/ancestor-locations?samples=0,1,2,3,4,5&time=${timeStep}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        visualizationData.anc_locs = data.data;
+    } finally {
+        document.body.removeChild(loadingDiv);
+    }
+}
 
 function startAnimation() {
     if (!animationStarted && controls) {
@@ -150,7 +157,6 @@ async function initVisualization() {
     setupLighting();
     createLegend();
     
-    // Add resize listener here after camera is initialized
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -184,7 +190,6 @@ function createGlobe() {
         });
     });
 }
-
 
 function setupControls() {
     controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -450,52 +455,53 @@ function filterDataByChromosome() {
 
 function setupEventListeners() {
     const timeSlider = document.getElementById('timeSlider');
-    timeSlider.addEventListener('input', (e) => {
+    timeSlider.addEventListener('input', async (e) => {
         currentTimeStep = parseInt(e.target.value);
         document.getElementById('timeValue').textContent = 
             Math.round(visualizationData.ancestor_times[currentTimeStep]);
-        updateVisualization();
+        await loadAncestorLocations(currentTimeStep);
+        await updateVisualization();
     });
 
     const showArrows = document.getElementById('showArrows');
     const arrowControls = document.getElementById('arrowControls');
-    showArrows.addEventListener('change', (e) => {
+    showArrows.addEventListener('change', async (e) => {
         arrowControls.classList.toggle('active', e.target.checked);
-        updateVisualization();
+        await updateVisualization();
     });
 
     const arrowColorSelect = document.getElementById('arrowColorMode');
-    arrowColorSelect.addEventListener('change', (e) => {
+    arrowColorSelect.addEventListener('change', async (e) => {
         arrowColorMode = e.target.value;
-        updateVisualization();
+        await updateVisualization();
     });
 
     const showPoints = document.getElementById('showPoints');
     const pointControls = document.getElementById('pointControls');
-    showPoints.addEventListener('change', (e) => {
+    showPoints.addEventListener('change', async (e) => {
         pointControls.classList.toggle('active', e.target.checked);
-        updateVisualization();
+        await updateVisualization();
     });
 
     const pointColorSelect = document.getElementById('pointColorMode');
     const fstControls = document.getElementById('fstControls');
-    pointColorSelect.addEventListener('change', (e) => {
+    pointColorSelect.addEventListener('change', async (e) => {
         pointColorMode = e.target.value;
         fstControls.classList.toggle('active', e.target.value === 'fst');
-        updateVisualization();
+        await updateVisualization();
     });
 
     const fstSlider = document.getElementById('fstSlider');
-    fstSlider.addEventListener('input', (e) => {
+    fstSlider.addEventListener('input', async (e) => {
         currentFstThreshold = parseFloat(e.target.value);
         document.getElementById('fstValue').textContent = 
             currentFstThreshold.toFixed(2);
-        updateVisualization();
+        await updateVisualization();
     });
 
-    document.getElementById('chromosomeSelect').addEventListener('change', (e) => {
+    document.getElementById('chromosomeSelect').addEventListener('change', async (e) => {
         currentChromosome = e.target.value;
-        updateVisualization();
+        await updateVisualization();
     });
 
     ['Clouds', 'Sites'].forEach(layer => {
@@ -647,7 +653,7 @@ function updatePopulationVisibility(site, visible) {
     }
 }
 
-function updateVisualization() {
+async function updateVisualization() {
     updateClouds(currentTimeStep);
     updateArrows(currentTimeStep);
     updatePoints(currentTimeStep);
@@ -660,12 +666,10 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-
 async function init() {
     await loadData();
-    animate(); 
+    animate();
 }
 
 init();
-
 
