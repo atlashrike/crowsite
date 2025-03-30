@@ -21,6 +21,7 @@ const populationGroups = {
     carrion: ['Konstanz, Germany', 'Radolfzell, Germany', 'Sorriba, Spain']
 };
 const dataUrl = 'https://storage.googleapis.com/crowdat-8zp6gsbxjkr8nnln2dt2/visualization_data.json';
+
 async function loadData() {
     try {
         const loadingDiv = document.createElement('div');
@@ -40,15 +41,28 @@ async function loadData() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        const text = await response.text();
-        const cleanedText = text.replace(/\bNaN\b|\bnan\b|\bNAN\b/g, 'null');
-        
+        let text = await response.text();
+
+        const nanIndex = text.indexOf('NaN');
+        if (nanIndex !== -1) {
+            console.log("Found NaN at position:", nanIndex);
+            console.log("Context:", text.substring(nanIndex - 20, nanIndex + 20));
+        }
+
+        text = text.replace(/[^[,\s]NaN[,\s\]]/g, '0');  
+        text = text.replace(/\bNaN\b/g, '0');            
+        text = text.replace(/\bnan\b/gi, '0');          
+        text = text.replace(/\binfinity\b/gi, '"inf"');  
+        text = text.replace(/([,$$])(\s*)-?NaN(\s*)(,|$$])/g, '$1$20$3$4'); 
+
         try {
-            visualizationData = JSON.parse(cleanedText);
+            visualizationData = JSON.parse(text);
             console.log("Successfully parsed data");
         } catch (parseError) {
-            console.error("JSON Parse Error:", parseError);
-            console.log("Problematic text sample:", cleanedText.substring(0, 200) + "...");
+            const errorPosition = parseInt(parseError.message.match(/position (\d+)/)?.[1]);
+            if (errorPosition) {
+                console.error("Error context:", text.substring(errorPosition - 50, errorPosition + 50));
+            }
             throw parseError;
         }
 
