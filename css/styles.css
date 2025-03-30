@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Cantarell:wght@400;700&display=swap');
 
-body { 
-    margin: 0; 
+body {
+    margin: 0;
+    font-family: 'Cantarell', sans-serif;
 }
 
 #container { 
@@ -24,10 +26,22 @@ body {
     box-shadow: 0 0 10px rgba(0,0,0,0.3);
     max-height: 90vh;
     overflow-y: auto;
+    font-family: 'Cantarell', sans-serif;
+    font-size: 14px;
+}
+
+h3 {
+    font-family: 'Cantarell', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
 }
 
 .slider-container {
     margin: 15px 0;
+    font-family: 'Cantarell', sans-serif;
 }
 
 .slider-container input {
@@ -36,21 +50,26 @@ body {
 
 .layer-toggle {
     margin: 10px 0;
+    font-family: 'Cantarell', sans-serif;
 }
 
 #chromosomeSelect {
     width: 100%;
     margin: 10px 0;
+    font-family: 'Cantarell', sans-serif;
+    padding: 5px;
 }
 
 #colorMode {
     margin: 10px 0;
+    font-family: 'Cantarell', sans-serif;
 }
 
 .legend {
     margin-top: 15px;
     border-top: 1px solid #ccc;
     padding-top: 10px;
+    font-family: 'Cantarell', sans-serif;
 }
 
 .tooltip {
@@ -61,28 +80,20 @@ body {
     display: none;
     pointer-events: none;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    font-family: 'Cantarell', sans-serif;
+    font-size: 12px;
 }
 
-h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-}
-
-select {
-    padding: 5px;
-    width: 100%;
-}
-
-input[type="checkbox"] {
-    margin-right: 8px;
-}
-
-.layer-toggle label {
-    cursor: pointer;
+select, input {
+    font-family: 'Cantarell', sans-serif;
+    font-size: 13px;
 }
 
 #timeValue, #fstValue {
-    display: inline-block;
-    min-width: 30px;
-    text-align: right;
+    font-weight: 700;
+    color: #2196F3;
+}
+
+label {
+    font-weight: 400;
 }
