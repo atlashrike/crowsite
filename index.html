@@ -1,7 +1,7 @@
 <div id="container">
     <div id="globe"></div>
     <div id="controls">
-        <h3>Visualization Controls</h3>
+        <h3>Visualization Parameters</h3>
         <div class="slider-container">
             <label>Time Step: <span id="timeValue">0</span></label>
             <input type="range" id="timeSlider" min="0" max="20" value="0">
@@ -27,7 +27,7 @@
         </div>
         <div class="layer-toggle">
             <input type="checkbox" id="showPoints" checked>
-            <label for="showPoints">Ancestor Locations (Points)</label>
+            <label for="showPoints">Ancestor Points</label>
         </div>
         <div class="layer-toggle">
             <input type="checkbox" id="showSites" checked>
@@ -36,7 +36,22 @@
         <select id="chromosomeSelect">
             <option value="all">All Chromosomes</option>
         </select>
-        <div class="legend" id="legend"></div>
     </div>
+
+    <div id="legend-container">
+        <div class="legend-column">
+            <img src="https://drive.google.com/file/d/13zYUAEF0a14sxAEeszISo7zCWBIF4L7t" id="hooded-crow" class="crow-icon" alt="Hooded Crow">
+            <div class="legend-items" id="hooded-populations"></div>
+        </div>
+        <div class="legend-column">
+            <div class="legend-items" id="carrion-populations"></div>
+            <img src="https://drive.google.com/file/d/1FVfVjegc3iVtZzJhxr1XBbqT6MpgQ-ZF" id="carrion-crow" class="crow-icon" alt="Carrion Crow">
+        </div>
+    </div>
+
+    <div id="credits">
+        <p>placeholder | placeholder | placeholder | <a href="broke-link">placeholder</a></p>
+    </div>
+
     <div class="tooltip" id="tooltip"></div>
 </div>
