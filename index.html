@@ -1,1 +1,42 @@
-
+<div id="container">
+    <div id="globe"></div>
+    <div id="controls">
+        <h3>Visualization Controls</h3>
+        <div class="slider-container">
+            <label>Time Step: <span id="timeValue">0</span></label>
+            <input type="range" id="timeSlider" min="0" max="20" value="0">
+        </div>
+        <div class="slider-container">
+            <label>FST Threshold: <span id="fstValue">0.14</span></label>
+            <input type="range" id="fstSlider" min="0" max="1" step="0.01" value="0.14">
+        </div>
+        <div id="colorMode">
+            <label>Color Mode:</label>
+            <select id="colorModeSelect">
+                <option value="distance">Distance</option>
+                <option value="population">Population</option>
+            </select>
+        </div>
+        <div class="layer-toggle">
+            <input type="checkbox" id="showClouds" checked>
+            <label for="showClouds">Ancestor Clouds</label>
+        </div>
+        <div class="layer-toggle">
+            <input type="checkbox" id="showArrows" checked>
+            <label for="showArrows">Dispersal Arrows</label>
+        </div>
+        <div class="layer-toggle">
+            <input type="checkbox" id="showPoints" checked>
+            <label for="showPoints">Ancestor Locations (Points)</label>
+        </div>
+        <div class="layer-toggle">
+            <input type="checkbox" id="showSites" checked>
+            <label for="showSites">Sample Sites</label>
+        </div>
+        <select id="chromosomeSelect">
+            <option value="all">All Chromosomes</option>
+        </select>
+        <div class="legend" id="legend"></div>
+    </div>
+    <div class="tooltip" id="tooltip"></div>
+</div>
