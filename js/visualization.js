@@ -128,7 +128,7 @@ function createGlobe() {
     const geometry = new THREE.SphereGeometry(radius, 64, 64);
     const textureLoader = new THREE.TextureLoader();
     
-    textureLoader.load('world-countries.png', texture => {
+    textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', texture => {
         const material = new THREE.MeshPhongMaterial({
             map: texture,
             transparent: true
