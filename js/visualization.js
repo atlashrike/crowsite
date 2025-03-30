@@ -233,7 +233,7 @@ function updateArrows(timeStep) {
             direction,
             start,
             length,
-            arrowColorMode === 'distance' ? getDistanceColor(length) : getPopulationColor(i),
+            colorMode === 'distance' ? getDistanceColor(i) : getPopulationColor(i),
             length * 0.2,
             length * 0.1
         );
@@ -283,28 +283,63 @@ function updateSites() {
     });
 }
 
+function haversine(loc1, loc2) {
+    function toRadians(deg) {
+        return deg * Math.PI / 180;
+    }
+    
+    const lon1 = toRadians(loc1[0]);
+    const lat1 = toRadians(loc1[1]);
+    const lon2 = toRadians(loc2[0]);
+    const lat2 = toRadians(loc2[1]);
+
+    const dlon = lon2 - lon1;
+    const dlat = lat2 - lat1;
+    const a = Math.sin(dlat/2)**2 + 
+              Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlon/2)**2;
+    const c = 2 * Math.asin(Math.sqrt(a));
+    const r = 6371; 
+    return c * r;
+}
+
 function calculateDisplacements(timeStep) {
-    const anc_locs = visualizationData.anc_locs;
-    const locations = visualizationData.locations;
     const disps = [];
+    const locations = visualizationData.locations;
+    const anc_locs = visualizationData.anc_locs;
 
     for (let sample = 0; sample < locations.length; sample++) {
-        const locs = anc_locs[sample][timeStep];
+        const locs = anc_locs.map(arr => arr[sample][timeStep]);
+    
         const mean_loc = [
             d3.mean(locs, d => d[2]),
             d3.mean(locs, d => d[3])
         ];
-        disps.push([
+ 
+        const disp = [
             mean_loc[0] - locations[sample][0],
             mean_loc[1] - locations[sample][1]
-        ]);
+        ];
+        
+        disps.push(disp);
     }
+
+    const dists = disps.map((disp, i) => {
+        const loc1 = locations[i];
+        const loc2 = [loc1[0] + disp[0], loc1[1] + disp[1]];
+        return haversine(loc1, loc2);
+    });
+
+    const maxDist = Math.max(...dists);
+    const relative_dists = dists.map(d => d / maxDist);
+
+    visualizationData.distances = dists;
+    visualizationData.relative_distances = relative_dists;
+
     return disps;
 }
 
-function getDistanceColor(distance) {
-    const maxDist = visualizationData.max_distance;
-    return d3.interpolateViridis(distance / maxDist);
+function getDistanceColor(index) {
+    return d3.interpolateViridis(visualizationData.relative_distances[index]);
 }
 
 function getPopulationColor(index) {
