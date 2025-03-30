@@ -303,18 +303,32 @@ function haversine(loc1, loc2) {
 }
 
 function calculateDisplacements(timeStep) {
+    console.log("Data structure:", {
+        timeStep,
+        hasAncLocs: !!visualizationData.anc_locs,
+        ancLocsType: typeof visualizationData.anc_locs,
+        ancLocsLength: visualizationData.anc_locs?.length,
+        sampleLength: visualizationData.locations?.length
+    });
+
     const disps = [];
     const locations = visualizationData.locations;
     const anc_locs = visualizationData.anc_locs;
 
     for (let sample = 0; sample < locations.length; sample++) {
-        const locs = anc_locs.map(arr => arr[sample][timeStep]);
-    
+
+        const sampleLocs = [];
+        for (let i = 0; i < anc_locs.length; i++) {
+            if (anc_locs[i][sample] && anc_locs[i][sample][timeStep]) {
+                sampleLocs.push(anc_locs[i][sample][timeStep]);
+            }
+        }
+        
         const mean_loc = [
-            d3.mean(locs, d => d[2]),
-            d3.mean(locs, d => d[3])
+            d3.mean(sampleLocs, d => d[2]),
+            d3.mean(sampleLocs, d => d[3])
         ];
- 
+    
         const disp = [
             mean_loc[0] - locations[sample][0],
             mean_loc[1] - locations[sample][1]
