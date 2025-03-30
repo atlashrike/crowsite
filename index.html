@@ -1,71 +1,88 @@
-<div id="container">
-    <div id="globe"></div>
-<div id="controls">
-    <h3>Visualization Controls</h3>
-    <div class="slider-container">
-        <label>Time Step: <span id="timeValue">0</span></label>
-        <input type="range" id="timeSlider" min="0" max="20" value="0">
-    </div>
-    
-    <div class="layer-toggle">
-        <input type="checkbox" id="showClouds" checked>
-        <label for="showClouds">Ancestor Clouds</label>
-    </div>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Title</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="container">
+        <div id="globe"></div>
+        <div id="controls">
+            <h3>Visualization Controls</h3>
+            <div class="slider-container">
+                <label>Time Step: <span id="timeValue">0</span></label>
+                <input type="range" id="timeSlider" min="0" max="20" value="0">
+            </div>
+            
+            <div class="layer-toggle">
+                <input type="checkbox" id="showClouds" checked>
+                <label for="showClouds">Ancestor Clouds</label>
+            </div>
 
-    <div class="layer-toggle">
-        <input type="checkbox" id="showArrows" checked>
-        <label for="showArrows">Dispersal Arrows</label>
-        <div id="arrowControls" class="nested-controls">
-         <br>
-            <label>Color Mode:</label>
-            <select id="arrowColorMode">
-                <option value="distance">Distance</option>
-                <option value="population">Population</option>
+            <div class="layer-toggle">
+                <input type="checkbox" id="showArrows" checked>
+                <label for="showArrows">Dispersal Arrows</label>
+                <div id="arrowControls" class="nested-controls">
+                    <br>
+                    <label>Color Mode:</label>
+                    <select id="arrowColorMode">
+                        <option value="distance">Distance</option>
+                        <option value="population">Population</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layer-toggle">
+                <input type="checkbox" id="showPoints" checked>
+                <label for="showPoints">Ancestor Points</label>
+                <div id="pointControls" class="nested-controls">
+                    <br>
+                    <label>Color Mode:</label>
+                    <select id="pointColorMode">
+                        <option value="fst">Color by FST</option>
+                        <option value="population">Color by Population</option>
+                    </select>
+                    <div id="fstControls">
+                        <label>FST Threshold: <span id="fstValue">0.14</span></label>
+                        <input type="range" id="fstSlider" min="0" max="1" step="0.01" value="0.14">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layer-toggle">
+                <input type="checkbox" id="showSites" checked>
+                <label for="showSites">Sample Sites</label>
+            </div>
+
+            <select id="chromosomeSelect">
+                <option value="all">All Chromosomes</option>
             </select>
         </div>
-    </div>
 
-    <div class="layer-toggle">
-    <input type="checkbox" id="showPoints" checked>
-    <label for="showPoints">Ancestor Points</label>
-    <div id="pointControls" class="nested-controls">
-     <br>
-        <label>Color Mode:</label>
-        <select id="pointColorMode">
-            <option value="fst">Color by FST</option>
-            <option value="population">Color by Population</option>
-        </select>
-        <div id="fstControls">
-            <label>FST Threshold: <span id="fstValue">0.14</span></label>
-            <input type="range" id="fstSlider" min="0" max="1" step="0.01" value="0.14">
+        <div id="legend-container">
+            <div class="legend-column">
+                <img src="https://raw.githubusercontent.com/atlashrike/crowsite/main/images/export.png" id="hooded-crow" class="crow-icon" alt="Hooded Crow">
+                <div class="legend-items" id="hooded-populations"></div>
+            </div>
+            <div class="legend-column">
+                <div class="legend-items" id="carrion-populations"></div>
+                <img src="https://raw.githubusercontent.com/atlashrike/crowsite/main/images/export (1).png" id="carrion-crow" class="crow-icon" alt="Carrion Crow">
+            </div>
         </div>
-    </div>
-</div>
 
-    <div class="layer-toggle">
-        <input type="checkbox" id="showSites" checked>
-        <label for="showSites">Sample Sites</label>
-    </div>
 
-    <select id="chromosomeSelect">
-        <option value="all">All Chromosomes</option>
-    </select>
-</div>
-
-    <div id="legend-container">
-        <div class="legend-column">
-            <img src="https://raw.githubusercontent.com/atlashrike/crowsite/main/images/export.png" id="hooded-crow" class="crow-icon" alt="Hooded Crow">
-            <div class="legend-items" id="hooded-populations"></div>
+        <div id="credits">
+            <p>placeholder | <a href="https://github.com/atlashrike/crowsite">GitHub</a></p>
         </div>
-        <div class="legend-column">
-            <div class="legend-items" id="carrion-populations"></div>
-            <img src="https://raw.githubusercontent.com/atlashrike/crowsite/main/images/export (1).png" id="carrion-crow" class="crow-icon" alt="Carrion Crow">
-        </div>
+
+        <div class="tooltip" id="tooltip"></div>
     </div>
 
-    <div id="credits">
-        <p>placeholder | placeholder | placeholder | <a href="broke-link">placeholder</a></p>
-    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 
-    <div class="tooltip" id="tooltip"></div>
-</div>
+    <script src="js/visualization.js"></script>
+</body>
+</html>
+
