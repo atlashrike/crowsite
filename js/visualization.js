@@ -137,9 +137,7 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-
-
-async function initVisualization() {
+sync function initVisualization() {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -152,8 +150,22 @@ async function initVisualization() {
     setupLighting();
     createLegend();
     
-    const resizeEvent = new Event('resize');
-    window.dispatchEvent(resizeEvent);
+    // Add resize listener here after camera is initialized
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        const legendContainer = document.getElementById('legend-container');
+        if (legendContainer) {
+            const containerWidth = legendContainer.offsetWidth;
+            const crowIcons = document.getElementsByClassName('crow-icon');
+            Array.from(crowIcons).forEach(icon => {
+                const maxHeight = Math.min(50, containerWidth * 0.1); 
+                icon.style.maxHeight = `${maxHeight}px`;
+            });
+        }
+    });
 }
 
 function createGlobe() {
@@ -648,23 +660,6 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-
-
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    const legendContainer = document.getElementById('legend-container');
-    if (legendContainer) {
-        const containerWidth = legendContainer.offsetWidth;
-        const crowIcons = document.getElementsByClassName('crow-icon');
-        Array.from(crowIcons).forEach(icon => {
-            const maxHeight = Math.min(50, containerWidth * 0.1); 
-            icon.style.maxHeight = `${maxHeight}px`;
-        });
-    }
-});
 
 async function init() {
     await loadData();
