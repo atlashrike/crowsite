@@ -1,1 +1,88 @@
 
+body { 
+    margin: 0; 
+}
+
+#container { 
+    position: relative; 
+    width: 100vw; 
+    height: 100vh; 
+}
+
+#globe { 
+    width: 100%; 
+    height: 100%; 
+}
+
+#controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.slider-container {
+    margin: 15px 0;
+}
+
+.slider-container input {
+    width: 200px;
+}
+
+.layer-toggle {
+    margin: 10px 0;
+}
+
+#chromosomeSelect {
+    width: 100%;
+    margin: 10px 0;
+}
+
+#colorMode {
+    margin: 10px 0;
+}
+
+.legend {
+    margin-top: 15px;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}
+
+.tooltip {
+    position: absolute;
+    background: white;
+    padding: 5px;
+    border-radius: 3px;
+    display: none;
+    pointer-events: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+select {
+    padding: 5px;
+    width: 100%;
+}
+
+input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.layer-toggle label {
+    cursor: pointer;
+}
+
+#timeValue, #fstValue {
+    display: inline-block;
+    min-width: 30px;
+    text-align: right;
+}
