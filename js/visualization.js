@@ -20,17 +20,10 @@ const populationGroups = {
     hooded: ['Warsaw, Poland', 'Rimbo, Sweden', 'Uppsala, Sweden'],
     carrion: ['Konstanz, Germany', 'Radolfzell, Germany', 'Sorriba, Spain']
 };
+const dataUrl = 'https://storage.googleapis.com/crowdat-8zp6gsbxjkr8nnln2dt2/visualization_data.json';
+
 async function loadData() {
     try {
-        const siteFiles = [
-            'https://raw.githubusercontent.com/atlashrike/crowsite/refs/heads/main/data/konstanz_germany.json',
-            'https://raw.githubusercontent.com/atlashrike/crowsite/refs/heads/main/data/sorriba_spain.json',
-            'https://raw.githubusercontent.com/atlashrike/crowsite/refs/heads/main/data/rimbo_sweden.json',
-            'https://raw.githubusercontent.com/atlashrike/crowsite/refs/heads/main/data/uppsala_sweden.json',
-            'https://raw.githubusercontent.com/atlashrike/crowsite/refs/heads/main/data/radolfzell_germany.json',
-            'https://raw.githubusercontent.com/atlashrike/crowsite/refs/heads/main/data/konstanz_germany.json'
-        ];
-
         const loadingDiv = document.createElement('div');
         loadingDiv.style.position = 'absolute';
         loadingDiv.style.top = '50%';
@@ -39,38 +32,39 @@ async function loadData() {
         loadingDiv.style.background = 'rgba(255, 255, 255, 0.9)';
         loadingDiv.style.padding = '20px';
         loadingDiv.style.borderRadius = '5px';
-        loadingDiv.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
         document.body.appendChild(loadingDiv);
-        loadingDiv.textContent = `Loading data (1/${siteFiles.length})...`;
-        const firstResponse = await fetch(`split_data/${siteFiles[0]}`);
-        visualizationData = await firstResponse.json();
-        visualizationData.locations = [];
-        visualizationData.population_ixs = [];
-        visualizationData.site_names = [];
-        visualizationData.kde_data = {};
-        for (let i = 0; i < siteFiles.length; i++) {
-            loadingDiv.textContent = `Loading data (${i + 1}/${siteFiles.length})...`;
-            
-            const response = await fetch(`split_data/${siteFiles[i]}`);
-            const siteData = await response.json();
-            visualizationData.locations.push(siteData.locations[0]);
-            visualizationData.population_ixs.push(siteData.population_ixs[0]);
-            visualizationData.site_names.push(siteData.site_names[0]);
-            visualizationData.kde_data[i] = siteData.kde_data['0'];
+
+        loadingDiv.textContent = 'Loading data...';
+        
+        const response = await fetch(dataUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        visualizationData = await response.json();
+        console.log("Successfully loaded visualization data");
 
         document.body.removeChild(loadingDiv);
-
         initVisualization();
         setupEventListeners();
         populateChromosomeSelect();
 
     } catch (error) {
         console.error('Error loading data:', error);
-        document.getElementById('container').innerHTML = 
-            '<div class="error-message">Error loading visualization data</div>';
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.style.position = 'absolute';
+        errorMessage.style.top = '50%';
+        errorMessage.style.left = '50%';
+        errorMessage.style.transform = 'translate(-50%, -50%)';
+        errorMessage.style.background = 'rgba(255, 0, 0, 0.1)';
+        errorMessage.style.color = 'red';
+        errorMessage.style.padding = '20px';
+        errorMessage.style.borderRadius = '5px';
+        errorMessage.innerHTML = `Error loading visualization data:<br>${error.message}`;
+        document.getElementById('container').appendChild(errorMessage);
     }
 }
+
 
 const style = document.createElement('style');
 style.textContent = `
