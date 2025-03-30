@@ -20,7 +20,9 @@ const populationGroups = {
     hooded: ['Warsaw, Poland', 'Rimbo, Sweden', 'Uppsala, Sweden'],
     carrion: ['Konstanz, Germany', 'Radolfzell, Germany', 'Sorriba, Spain']
 };
-const dataUrl = 'https://storage.googleapis.com/crowdat-8zp6gsbxjkr8nnln2dt2/visualization_data.json';
+const mainDataUrl = 'https://storage.googleapis.com/crowdat-8zp6gsbxjkr8nnln2dt2/main_data.json';
+const ancLocsUrl = 'https://storage.googleapis.com/crowdat-8zp6gsbxjkr8nnln2dt2/anc_locs.json';
+
 
 async function loadData() {
     try {
@@ -36,43 +38,48 @@ async function loadData() {
 
         loadingDiv.textContent = 'Loading data...';
         
-        const response = await fetch('https://storage.googleapis.com/crowdat-8zp6gsbxjkr8nnln2dt2/visualization_data.json');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        const [mainResponse, ancLocsResponse] = await Promise.all([
+            fetch(mainDataUrl),
+            fetch(ancLocsUrl)
+        ]);
+        if (!mainResponse.ok || !ancLocsResponse.ok) {
+            throw new Error(`HTTP error! Main data: ${mainResponse.status}, Anc locs: ${ancLocsResponse.status}`);
         }
         
-        let text = await response.text();
+        let mainText = await mainResponse.text();
+        mainText = mainText.replace(/[^[,\s]NaN[,\s\]]/g, '0');  
+        mainText = mainText.replace(/\bNaN\b/g, '0');            
+        mainText = mainText.replace(/\bnan\b/gi, '0');          
+        mainText = mainText.replace(/\binfinity\b/gi, '"inf"');  
+        mainText = mainText.replace(/([,$$])(\s*)-?NaN(\s*)(,|$$])/g, '$1$20$3$4'); 
 
-        const nanIndex = text.indexOf('NaN');
-        if (nanIndex !== -1) {
-            console.log("Found NaN at position:", nanIndex);
-            console.log("Context:", text.substring(nanIndex - 20, nanIndex + 20));
-        }
-
-        text = text.replace(/[^[,\s]NaN[,\s\]]/g, '0');  
-        text = text.replace(/\bNaN\b/g, '0');            
-        text = text.replace(/\bnan\b/gi, '0');          
-        text = text.replace(/\binfinity\b/gi, '"inf"');  
-        text = text.replace(/([,$$])(\s*)-?NaN(\s*)(,|$$])/g, '$1$20$3$4'); 
+        let ancLocsText = await ancLocsResponse.text();
+        ancLocsText = ancLocsText.replace(/[^[,\s]NaN[,\s\]]/g, '0');
+        ancLocsText = ancLocsText.replace(/\bNaN\b/g, '0');
 
         try {
-            visualizationData = JSON.parse(text);
-            console.log(""Data structure:", {
+            const mainData = JSON.parse(mainText);
+            const ancLocsData = JSON.parse(ancLocsText);
+            visualizationData = {
+                ...mainData,
+                anc_locs: ancLocsData.data
+            };
+
+            console.log("Data structure:", {
                 hasLocations: !!visualizationData.locations,
                 hasAncLocs: !!visualizationData.anc_locs,
                 locationsLength: visualizationData.locations?.length,
                 ancLocsLength: visualizationData.anc_locs?.length
             });
+
             document.body.removeChild(loadingDiv);
             await initVisualization();
             setupEventListeners();
             populateChromosomeSelect();
             updateVisualization();
+
         } catch (parseError) {
-            const errorPosition = parseInt(parseError.message.match(/position (\d+)/)?.[1]);
-            if (errorPosition) {
-                console.error("Error context:", text.substring(errorPosition - 50, errorPosition + 50));
-            }
+            console.error("Parse error:", parseError);
             throw parseError;
         }
 
