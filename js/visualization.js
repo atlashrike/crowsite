@@ -38,7 +38,7 @@ async function loadData() {
         loadingDiv.textContent = 'Loading main data...';
         
         const mainResponse = await fetch(`${API_BASE_URL}/api/main-data`, 
-  mode: 'cors',);
+  mode: 'cors');
         if (!mainResponse.ok) {
             throw new Error(`HTTP error! status: ${mainResponse.status}`);
         }
@@ -47,7 +47,7 @@ async function loadData() {
         
         loadingDiv.textContent = 'Loading ancestor locations...';
         const ancResponse = await fetch(`${API_BASE_URL}/api/ancestor-locations?samples=0,1,2,3,4,5&time=0`,
-  mode: 'cors',);
+  mode: 'cors');
         if (!ancResponse.ok) {
             throw new Error(`HTTP error! status: ${ancResponse.status}`);
         }
